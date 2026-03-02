@@ -1,0 +1,12 @@
+name = "CEXTokenizer"
+uuid = "78d474ab-0c9d-4e83-a1fd-9a19dd4c412f"
+version = "0.1.0"
+authors = ["C. W. Blackwell"]
+
+[deps]
+CitableBase = "d6f014bd-995c-41bd-9893-703339864534"
+CiteEXchange = "e2e9ead3-1b6c-4e96-b95f-43e6ab899178"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+julia = "1.8"

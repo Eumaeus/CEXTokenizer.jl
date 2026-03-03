@@ -4,9 +4,11 @@ version = "0.1.0"
 authors = ["C. W. Blackwell"]
 
 [deps]
+BetaReader = "e5583720-4bc8-44d1-bd9a-9734450b0166"
 CitableBase = "d6f014bd-995c-41bd-9893-703339864534"
 CiteEXchange = "e2e9ead3-1b6c-4e96-b95f-43e6ab899178"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
+BetaReader = "2.2.3"
 julia = "1.8"

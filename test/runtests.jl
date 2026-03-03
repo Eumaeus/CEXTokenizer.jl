@@ -17,6 +17,23 @@ using CEXTokenizer
         @test urn_for_token(orig, 2) == "urn:cts:greekLit:tlg0012.tlg001.perseus_grc2.tokens:1.1.2"
     end
 
+
+
     # TODO: Add integration test with a small .cex file in test/data/
     # e.g. write a tiny cex string to a temp file and call tokenize(...)
+end
+
+@testset "analytical_tokenize helpers" begin
+    @test is_word_token("Μῆνιν") == true
+    @test is_word_token(" ") == false
+    @test is_word_token(",") == false
+
+    @test to_analytical_beta("Μῆνιν") == "mh=nin"
+    @test to_analytical_beta("θεὰ") == "qea/"   # grave → acute after lowercasing
+end
+
+@testset "analytical_tokenize URNs" begin
+    orig = "urn:cts:greekLit:tlg0012.tlg001.perseus_grc2:1.1"
+    @test urn_for_token(orig, 3; exemplar="analytical_tokens") ==
+          "urn:cts:greekLit:tlg0012.tlg001.perseus_grc2.analytical_tokens:1.1.3"
 end

@@ -18,7 +18,10 @@ export to_analytical_beta
 """
     tokenize(cexFile::AbstractString, outputFile::AbstractString; delimiter::AbstractString="#")
 
-(see previous documentation — unchanged)
+Tokenize every `#!ctsdata` passage:
+- Words (optionally ending with `'` or `ʼ`) stay together as one token
+- Other single punctuation marks and whitespace runs are separate tokens
+- Output: one CEX line per token with `.tokens` exemplar
 """
 function tokenize(cexFile::AbstractString, outputFile::AbstractString; delimiter::AbstractString = "#")
     _process_ctsdata(cexFile, outputFile, delimiter) do urn_str, passage_text, io
@@ -34,10 +37,10 @@ end
     analytical_tokenize(cexFile::AbstractString, outputFile::AbstractString; delimiter::AbstractString="#")
 
 Identical parsing to `tokenize()`, but:
-- Only **word tokens** are emitted (punctuation and whitespace are dropped)
+- Only **word tokens** (now including trailing `'` or `ʼ`) are emitted
 - URNs use `.analytical_tokens` as the exemplar
-- Each word is converted via `BetaReader.unicodeToBeta`, then lower-cased, then all grave accents (`\\`) → acute (`/`)
-- Token indices **exactly match** the positions from `tokenize()` (so you can align the two files)
+- Each word (with its trailing apostrophe if present) is converted via `BetaReader.unicodeToBeta`, lower-cased, graves (`\\`) → acutes (`/`)
+- Token indices **exactly match** the positions from `tokenize()`
 
 Designed for Ancient Greek analytical pipelines.
 """
@@ -79,14 +82,19 @@ end
 
 """
     tokenize_text(s::AbstractString) -> Vector{String}
+
+Now correctly glues a trailing apostrophe (`'` or `ʼ`) to the preceding word.
 """
 function tokenize_text(s::AbstractString)::Vector{String}
     tokens = String[]
-    for m in eachmatch(r"([\p{L}\p{N}]+|[\p{P}]|\s+)", s)
+    for m in eachmatch(r"([\p{L}\p{N}]+['ʼ]?|['ʼ]|\p{P}|\s+)", s)
         push!(tokens, m.match)
     end
     tokens
 end
+
+# Analytical helpers
+is_word_token(s::AbstractString)::Bool = occursin(r"^[\p{L}\p{N}]+['ʼ]?$", s)
 
 """
     urn_for_token(original_urn::AbstractString, token_index::Int; exemplar::AbstractString="tokens") -> String
@@ -107,9 +115,6 @@ function urn_for_token(original_urn::AbstractString, token_index::Int; exemplar:
 
     "urn:cts:" * namespace * ":" * new_work * ":" * new_passage
 end
-
-# Analytical helpers (private for now)
-is_word_token(s::AbstractString)::Bool = occursin(r"^[\p{L}\p{N}]+$", s)
 
 function to_analytical_beta(s::AbstractString)::String
     beta = BetaReader.unicodeToBeta(s)

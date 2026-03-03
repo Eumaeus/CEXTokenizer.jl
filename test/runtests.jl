@@ -37,3 +37,15 @@ end
     @test urn_for_token(orig, 3; exemplar="analytical_tokens") ==
           "urn:cts:greekLit:tlg0012.tlg001.perseus_grc2.analytical_tokens:1.1.3"
 end
+
+@testset "apostrophe handling in tokenize_text & is_word_token" begin
+    @test is_word_token("τʼ") == true
+    @test is_word_token("Ἀχιλλῆος'") == true
+    @test is_word_token("word'") == true
+    @test is_word_token("'") == false          # standalone
+    @test is_word_token(",") == false
+
+    s = "τʼ Ἀχιλλῆος' word' ,!"
+    toks = tokenize_text(s)
+    @test toks == ["τʼ", " ", "Ἀχιλλῆος'", " ", "word'", " ", ",", "!"]
+end
